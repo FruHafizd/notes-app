@@ -1,0 +1,17 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f7f9fc;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+main {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
+
+h1 {
+    font-weight: bold;
+}
