@@ -5,49 +5,80 @@ class NoteItem extends HTMLElement {
   }
 
   set note(note) {
-    this.render(note);
+    this._note = note;
+    this.render();
   }
 
-  render(note) {
-    const createdAt = new Date(note.createdAt);
-    const formattedDate = createdAt.toISOString().slice(0, 19).replace('T', ' ');
+  connectedCallback() {
+    this.render();
+  }
+
+  handleDelete() {
+    this.dispatchEvent(new CustomEvent("delete-note", {
+      detail: { noteId: this._note.id },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  render() {
+    if (!this._note) return;
 
     this.shadowRoot.innerHTML = `
       <style>
-        div {
-          background: #fff;
-          border: 1px solid #ddd;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s, box-shadow 0.3s;
+        .note-card {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          padding: 1rem;
+          border-radius: 6px;
+          background: #f8f9fa;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        div:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+        .note-title {
+          font-size: 1.2rem;
+          font-weight: bold;
         }
-        h3 {
-          font-size: 1.5rem;
-          color: #333;
-          margin-bottom: 10px;
-        }
-        p {
+
+        .note-body {
           font-size: 1rem;
           color: #555;
-          line-height: 1.6;
-          margin-bottom: 1rem;
         }
-        .created-at {
-          font-size: 0.85rem;
-          color: #888;
+
+        .button-container {
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .delete-btn {
+          padding: 0.6rem 1.2rem;
+          background: linear-gradient(to right, #e74c3c, #c0392b);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
       </style>
-      <div data-noteid="${note.id}">
-        <h3>${note.title}</h3>
-        <p>${note.body}</p>
-        <span class="created-at">Created on: ${formattedDate}</span>
+
+      <div class="note-card">
+        <div class="note-title">${this._note.title}</div>
+        <div class="note-body">${this._note.body}</div>
+        <div class="button-container">
+          <button class="delete-btn">Hapus</button>
+        </div>
       </div>
     `;
+
+    this.shadowRoot.querySelector(".delete-btn").addEventListener("click", () => this.handleDelete());
   }
 }
 
